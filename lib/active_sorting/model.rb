@@ -24,6 +24,22 @@ module ActiveSorting
         before_validation :active_sorting_callback_before_validation
       end
 
+      # Sorts and updates the database with the given list of items
+      # in the given order.
+      #
+      # +new_list+ List of ids of records in the desired order
+      # +id_column+ the field used for fetching records from the databse,
+      #             defaults to :id
+      def sort_list(new_list, id_column = :id)
+        raise ArgumentError, "Sortable list should not be empty" unless new_list.count
+        conditions = {}
+        conditions[id_column] = new_list
+        old_list = unscoped.where(conditions).pluck(:id)
+        raise ArgumentError, "Sortable list should be persisted to database" unless old_list.count
+        changes = active_sorting_changes_required(old_list, new_list)
+        active_sorting_make_changes(new_list, changes)
+      end
+
       # Default sorting options
       def active_sorting_default_options
         {
@@ -65,7 +81,7 @@ module ActiveSorting
         end
         proposal1 = active_sorting_calculate_changes(old_list.dup, new_list.dup)
         if proposal1.count >= (new_list.count / 4)
-          proposal2 = active_sorting_calculate_changes(old_list.reverse, new_list.reverse)
+          proposal2 = active_sorting_calculate_changes(old_list.dup.reverse, new_list.dup.reverse)
           changes = proposal1.count < proposal2.count ? proposal1 : proposal2
         else
           changes = proposal1
@@ -98,17 +114,17 @@ module ActiveSorting
             # We're moving an item to last position,
             # increase the count of last item's position
             # by the step
-            n1 = find(index.pred).active_sorting_value
+            n1 = find(new_list[index.pred]).active_sorting_value
             n2 = n1 + active_sorting_step
           elsif index == 0
             # We're moving an item to first position
             # Calculate the gap between following 2 items
-            n1 = find(index.next).active_sorting_value
-            n2 = find(index.next.next).active_sorting_value
+            n1 = find(new_list[index.next]).active_sorting_value
+            n2 = find(new_list[index.next.next]).active_sorting_value
           else
             # We're moving a non-terminal item
-            n1 = find(index.pred).active_sorting_value
-            n2 = find(index.next).active_sorting_value
+            n1 = find(new_list[index.pred]).active_sorting_value
+            n2 = find(new_list[index.next]).active_sorting_value
           end
           find(id).active_sorting_center_item(n1, n2)
         end

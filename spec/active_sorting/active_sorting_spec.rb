@@ -25,34 +25,66 @@ describe ActiveSorting do
     it { expect { Category.sortable(:position, scope: 'foo') }.to raise_error(ArgumentError) }
   end
 
-  context 'ActiveRecord hooks' do
-    context 'before_create' do
-      it { expect(item.active_sorting_value).not_to be_nil }
+  context 'ActiveRecord integration' do
+    context 'scopes' do
+      before do
+        5.times { Page.create!(title: 'test sports page', category: sports) }
+        10.times { Page.create!(title: 'test local page', category: local) }
+      end
 
-      it 'generates correct steppings' do
-        items.each_with_index do |item, index|
-          value = index * item.class.active_sorting_step
-          expect(item.active_sorting_value.to_s).to eq value.to_s
-        end
+      it 'restarts steps based on scope' do
+        expect(Page.where(category: local).to_a.second.active_sorting_value).to eq Page.active_sorting_step
+        expect(Page.where(category: sports).first.active_sorting_value).to eq 0
+        expect(Page.where(category: sports).last.active_sorting_value).to eq (4 * Page.active_sorting_step)
       end
     end
 
-    context 'before_update' do
+    context 'default_scope' do
       before do
-        item.save!
+        10.times { Page.create!(title: 'test local page', category: local) }
       end
-      it 'does not change sorting field' do
-        expect(item.active_sorting_value).not_to be_nil
+
+      it 'adds ORDER to SQL queries' do
+        expect(Page.all.to_sql).to include 'ORDER'
+      end
+
+      it 'orders items by sortable field' do
+        expect(Page.first.active_sorting_value).to eq 0
+        expect(Page.all.to_a.second.active_sorting_value).to eq Page.active_sorting_step
+        expect(Page.last.active_sorting_value).to eq (9 * Page.active_sorting_step)
+      end
+    end
+
+    context 'hooks' do
+      context 'before_create' do
+        it { expect(item.active_sorting_value).not_to be_nil }
+
+        it 'generates correct steppings' do
+          items.each_with_index do |item, index|
+            value = index * item.class.active_sorting_step
+            expect(item.active_sorting_value.to_s).to eq value.to_s
+          end
+        end
+      end
+
+      context 'before_update' do
+        before do
+          item.save!
+        end
+        it 'does not change sorting field' do
+          expect(item.active_sorting_value).not_to be_nil
+        end
       end
     end
   end
 
-  context '.active_sorting_center_item' do
-    it 'centers an item between two given positions' do
-      expect(item.active_sorting_center_item(100, 200).active_sorting_value).to eq 150
-      expect(item.active_sorting_center_item(100_000_000, 100_000_002).active_sorting_value).to eq 100_000_001
-      expect(item.active_sorting_center_item(2_000_000_000, 2_000_000_002).active_sorting_value).to eq 2_000_000_001
+  context '.sort_list' do
+    let(:new_list) { [1, 3, 5, 4, 6, 2, 7] }
+    before do
+      items # just create the items
+      item.class.sort_list(new_list)
     end
+    it { expect(Item.all.pluck(:id)).to eq new_list }
   end
 
   context '.active_sorting_changes_required' do
@@ -127,32 +159,11 @@ describe ActiveSorting do
     end
   end
 
-  context 'scopes' do
-    before do
-      5.times { Page.create!(title: 'test sports page', category: sports) }
-      10.times { Page.create!(title: 'test local page', category: local) }
-    end
-
-    it 'restarts steps based on scope' do
-      expect(Page.where(category: local).to_a.second.active_sorting_value).to eq Page.active_sorting_step
-      expect(Page.where(category: sports).first.active_sorting_value).to eq 0
-      expect(Page.where(category: sports).last.active_sorting_value).to eq (4 * Page.active_sorting_step)
-    end
-  end
-
-  context 'default_scope' do
-    before do
-      10.times { Page.create!(title: 'test local page', category: local) }
-    end
-
-    it 'adds ORDER to SQL queries' do
-      expect(Page.all.to_sql).to include 'ORDER'
-    end
-
-    it 'orders items by sortable field' do
-      expect(Page.first.active_sorting_value).to eq 0
-      expect(Page.all.to_a.second.active_sorting_value).to eq Page.active_sorting_step
-      expect(Page.last.active_sorting_value).to eq (9 * Page.active_sorting_step)
+  context '#active_sorting_center_item' do
+    it 'centers an item between two given positions' do
+      expect(item.active_sorting_center_item(100, 200).active_sorting_value).to eq 150
+      expect(item.active_sorting_center_item(100_000_000, 100_000_002).active_sorting_value).to eq 100_000_001
+      expect(item.active_sorting_center_item(2_000_000_000, 2_000_000_002).active_sorting_value).to eq 2_000_000_001
     end
   end
 end
