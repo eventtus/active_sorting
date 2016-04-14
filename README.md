@@ -7,7 +7,7 @@
 
 Allows sorting Rails models using a custom field.
 
-[Code Documentation](http://www.rubydoc.info/github/owahab/activesorting)
+[Code Documentation](http://www.rubydoc.info/github/owahab/active_sorting)
 
 ## Requirements
 
