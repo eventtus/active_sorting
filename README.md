@@ -5,8 +5,7 @@
 [![Inline docs](http://inch-ci.org/github/owahab/active_sorting.svg?branch=master)](http://inch-ci.org/github/owahab/active_sorting)
 [![security](https://hakiri.io/github/owahab/active_sorting/master.svg)](https://hakiri.io/github/owahab/active_sorting/master)
 
-Rails recently introduced `has_secure_token` but it's very primitive.
-Meet the competition.
+Allows sorting Rails models using a custom field.
 
 [Code Documentation](http://www.rubydoc.info/github/owahab/activesorting)
 
@@ -36,7 +35,20 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+Adds sorting support to Rails models.
+
+To sort by a model field `position`:
+
+    class Example < ActiveRecord::Base
+      sortable :position
+    end
+
+You can customize the sorting behavior by
+passing an options hash. The following keys are supported:
+
+  `order` sorting direction, defaults to :asc
+  `step` stepping value, defaults to 500
+  `scope` scopes, defaults to []
 
 ## Development
 
@@ -46,4 +58,6 @@ To install this gem onto your local machine, run `bundle exec rake install`. To 
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/activesorting.
+Please see CONTRIBUTING.md for details.
+
+## Credits
