@@ -2,13 +2,12 @@ module ActiveSorting
   module Model # :nodoc:
     def self.included(base)
       base.extend ClassMethods
+      # Track all sortable arguments
+      base.class_attribute :active_sorting_options
     end
 
     # Patches ActiveRecord models
     module ClassMethods
-      # Track all sortable arguments
-      attr_accessor :active_sorting_options
-
       # Sets the sortable options
       #
       # +name+ sortable field name
@@ -35,8 +34,9 @@ module ActiveSorting
 
       # Check provided options
       def active_sorting_check_options
-        unless columns_hash[active_sorting_field.to_s].type == :integer
-          raise ArgumentError, 'Sortable field should be of type Integer'
+        field_type = columns_hash[active_sorting_field.to_s].type
+        unless field_type == :integer
+          raise ArgumentError, "Sortable field should be of type Integer, #{field_type} given"
         end
         unless active_sorting_step.is_a?(Fixnum)
           raise ArgumentError, 'Sortable step should be of type Fixnum'
