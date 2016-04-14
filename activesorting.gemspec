@@ -22,6 +22,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'rake', '~> 10.0'
   spec.add_development_dependency 'rspec'
   spec.add_development_dependency 'sqlite3'
+  spec.add_development_dependency 'database_cleaner'
   spec.add_development_dependency 'coveralls'
   spec.add_development_dependency 'appraisal'
 

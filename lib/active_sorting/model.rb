@@ -20,6 +20,7 @@ module ActiveSorting
         active_sorting_options[:name] = name
         active_sorting_check_options
         validates active_sorting_options[:name], presence: true
+        default_scope { active_sorting_default_scope }
         before_validation :active_sorting_callback_before_validation
       end
 
@@ -37,11 +38,20 @@ module ActiveSorting
         # TODO: columns_hash breaks when database has no tables
         # field_type = columns_hash[active_sorting_field.to_s].type
         # unless field_type == :integer
-        #   raise ArgumentError, "Sortable field should be of type Integer, #{field_type} given"
+        #   raise ArgumentError, "Sortable field should be of type Integer, #{field_type} where given"
         # end
         unless active_sorting_step.is_a?(Fixnum)
-          raise ArgumentError, 'Sortable step should be of type Fixnum'
+          raise ArgumentError, "Sortable step should be of type Fixnum, #{active_sorting_step.class.name} where given"
         end
+        unless active_sorting_scope.respond_to?(:each)
+          raise ArgumentError, "Sortable step should be of type Enumerable, #{active_sorting_scope.class.name} where given"
+        end
+      end
+
+      def active_sorting_default_scope
+        conditions = {}
+        conditions[active_sorting_field] = active_sorting_order
+        order(conditions)
       end
 
       # Calculate the least possible changes required to
@@ -51,7 +61,7 @@ module ActiveSorting
       def active_sorting_changes_required(old_list, new_list)
         changes = []
         if old_list.count != new_list.count
-          raise ArgumentError, "Size mismatch between new (#{new_list.count}) and old (#{old_list.count}) array of items"
+          raise ArgumentError, "Sortable new and old lists should be of the same length"
         end
         proposal1 = active_sorting_calculate_changes(old_list.dup, new_list.dup)
         if proposal1.count >= (new_list.count / 4)
@@ -115,6 +125,10 @@ module ActiveSorting
       def active_sorting_order
         active_sorting_options[:order]
       end
+
+      def active_sorting_scope
+        active_sorting_options[:scope]
+      end
     end
 
     def active_sorting_value
@@ -125,7 +139,7 @@ module ActiveSorting
       send("#{self.class.active_sorting_field}=", new_value)
     end
 
-    # Centers an item between the given two positions
+    # Centers an item between the where given two positions
     def active_sorting_center_item(n1, n2)
       delta = (n1 - n2).abs
       smaller = [n1, n2].min
@@ -141,9 +155,15 @@ module ActiveSorting
 
     # Generate the next stepping
     def active_sorting_next_step
+      conditions = {}
+      self.class.active_sorting_scope.each do |s|
+        conditions[s] = send(s)
+      end
       # Get the maximum value for the sortable field name
-      # TODO: scopes
-      max = self.class.unscoped.maximum(self.class.active_sorting_field)
+      max = self.class
+                .unscoped
+                .where(conditions)
+                .maximum(self.class.active_sorting_field)
       # First value will always be 0
       return 0 if max.nil?
       # Increment by the step value configured
@@ -151,7 +171,7 @@ module ActiveSorting
     end
 
     ## Callbacks
-    # Generates a new code based on given options
+    # Generates a new code based on where given options
     def active_sorting_callback_before_validation
       field_name = self.class.active_sorting_field
       send("#{field_name}=", active_sorting_next_step) if send(field_name).nil?
