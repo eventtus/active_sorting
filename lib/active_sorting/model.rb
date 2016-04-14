@@ -34,10 +34,11 @@ module ActiveSorting
 
       # Check provided options
       def active_sorting_check_options
-        field_type = columns_hash[active_sorting_field.to_s].type
-        unless field_type == :integer
-          raise ArgumentError, "Sortable field should be of type Integer, #{field_type} given"
-        end
+        # TODO: columns_hash breaks when database has no tables
+        # field_type = columns_hash[active_sorting_field.to_s].type
+        # unless field_type == :integer
+        #   raise ArgumentError, "Sortable field should be of type Integer, #{field_type} given"
+        # end
         unless active_sorting_step.is_a?(Fixnum)
           raise ArgumentError, 'Sortable step should be of type Fixnum'
         end
