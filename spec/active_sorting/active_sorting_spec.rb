@@ -33,9 +33,9 @@ describe ActiveSorting do
       end
 
       it 'restarts steps based on scope' do
-        expect(Page.where(category: local).to_a.second.active_sorting_value).to eq Page.active_sorting_step
-        expect(Page.where(category: sports).first.active_sorting_value).to eq 0
-        expect(Page.where(category: sports).last.active_sorting_value).to eq (4 * Page.active_sorting_step)
+        expect(Page.where(category: local).to_a.second.active_sorting_value).to eq 2 * Page.active_sorting_step
+        expect(Page.where(category: sports).first.active_sorting_value).to eq Page.active_sorting_step
+        expect(Page.where(category: sports).last.active_sorting_value).to eq (5 * Page.active_sorting_step)
       end
     end
 
@@ -49,9 +49,9 @@ describe ActiveSorting do
       end
 
       it 'orders items by sortable field' do
-        expect(Page.first.active_sorting_value).to eq 0
-        expect(Page.all.to_a.second.active_sorting_value).to eq Page.active_sorting_step
-        expect(Page.last.active_sorting_value).to eq (9 * Page.active_sorting_step)
+        expect(Page.first.active_sorting_value).to eq Page.active_sorting_step
+        expect(Page.all.to_a.second.active_sorting_value).to eq 2 * Page.active_sorting_step
+        expect(Page.last.active_sorting_value).to eq (10 * Page.active_sorting_step)
       end
     end
 
@@ -61,7 +61,7 @@ describe ActiveSorting do
 
         it 'generates correct steppings' do
           items.each_with_index do |item, index|
-            value = index * item.class.active_sorting_step
+            value = (index + 1) * item.class.active_sorting_step
             expect(item.active_sorting_value.to_s).to eq value.to_s
           end
         end
