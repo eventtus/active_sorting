@@ -34,10 +34,10 @@ module ActiveSorting
         raise ArgumentError, "Sortable list should not be empty" unless new_list.count
         conditions = {}
         conditions[id_column] = new_list
-        old_list = unscoped.where(conditions).pluck(:id)
+        old_list = unscoped.where(conditions).pluck(id_column)
         raise ArgumentError, "Sortable list should be persisted to database" unless old_list.count
         changes = active_sorting_changes_required(old_list, new_list)
-        active_sorting_make_changes(new_list, changes)
+        active_sorting_make_changes(new_list, changes, id_column)
       end
 
       # Default sorting options
@@ -107,26 +107,26 @@ module ActiveSorting
       end
 
       # Commit changes to database
-      def active_sorting_make_changes(new_list, changes)
+      def active_sorting_make_changes(new_list, changes, id_column)
         new_list.each_with_index do |id, index|
           next unless changes.include?(id)
           if index == new_list.count.pred
             # We're moving an item to last position,
             # increase the count of last item's position
             # by the step
-            n1 = find(new_list[index.pred]).active_sorting_value
+            n1 = active_sorting_find_by(id_column, new_list[index.pred]).active_sorting_value
             n2 = n1 + active_sorting_step
           elsif index == 0
             # We're moving an item to first position
             # Calculate the gap between following 2 items
-            n1 = find(new_list[index.next]).active_sorting_value
-            n2 = find(new_list[index.next.next]).active_sorting_value
+            n1 = active_sorting_find_by(id_column, new_list[index.next]).active_sorting_value
+            n2 = active_sorting_find_by(id_column, new_list[index.next]).active_sorting_value
           else
             # We're moving a non-terminal item
-            n1 = find(new_list[index.pred]).active_sorting_value
-            n2 = find(new_list[index.next]).active_sorting_value
+            n1 = active_sorting_find_by(id_column, new_list[index.pred]).active_sorting_value
+            n2 = active_sorting_find_by(id_column, new_list[index.next]).active_sorting_value
           end
-          find(id).active_sorting_center_item(n1, n2)
+          active_sorting_find_by(id_column, id).active_sorting_center_item(n1, n2)
         end
       end
 
@@ -144,6 +144,12 @@ module ActiveSorting
 
       def active_sorting_scope
         active_sorting_options[:scope]
+      end
+
+      def active_sorting_find_by(id_column, value)
+        conditions = {}
+        conditions[id_column] = value
+        find_by(conditions)
       end
     end
 
@@ -180,8 +186,8 @@ module ActiveSorting
                 .unscoped
                 .where(conditions)
                 .maximum(self.class.active_sorting_field)
-      # First value will always be 0
-      return 0 if max.nil?
+      # First value will always equal step
+      return self.class.active_sorting_step if max.nil?
       # Increment by the step value configured
       max + self.class.active_sorting_step
     end
