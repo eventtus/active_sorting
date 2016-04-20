@@ -34,7 +34,7 @@ module ActiveSorting
         raise ArgumentError, "Sortable list should not be empty" unless new_list.count
         conditions = {}
         conditions[id_column] = new_list
-        old_list = unscoped.where(conditions).pluck(id_column)
+        old_list = unscoped.active_sorting_default_scope.where(conditions).pluck(id_column)
         raise ArgumentError, "Sortable list should be persisted to database" unless old_list.count
         changes = active_sorting_changes_required(old_list, new_list)
         active_sorting_make_changes(new_list, changes, id_column)
