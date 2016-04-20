@@ -186,7 +186,7 @@ module ActiveSorting
                 .unscoped
                 .where(conditions)
                 .maximum(self.class.active_sorting_field)
-      # First value will always be 0
+      # First value will always equal step
       return self.class.active_sorting_step if max.nil?
       # Increment by the step value configured
       max + self.class.active_sorting_step
