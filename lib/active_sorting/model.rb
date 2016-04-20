@@ -114,19 +114,19 @@ module ActiveSorting
             # We're moving an item to last position,
             # increase the count of last item's position
             # by the step
-            n1 = find_by("#{id_column}": new_list[index.pred]).active_sorting_value
+            n1 = active_sorting_find_by(id_column, new_list[index.pred]).active_sorting_value
             n2 = n1 + active_sorting_step
           elsif index == 0
             # We're moving an item to first position
             # Calculate the gap between following 2 items
-            n1 = find_by("#{id_column}": new_list[index.next]).active_sorting_value
-            n2 = find_by("#{id_column}": new_list[index.next.next]).active_sorting_value
+            n1 = active_sorting_find_by(id_column, new_list[index.next]).active_sorting_value
+            n2 = active_sorting_find_by(id_column, new_list[index.next]).active_sorting_value
           else
             # We're moving a non-terminal item
-            n1 = find_by("#{id_column}": new_list[index.pred]).active_sorting_value
-            n2 = find_by("#{id_column}": new_list[index.next]).active_sorting_value
+            n1 = active_sorting_find_by(id_column, new_list[index.pred]).active_sorting_value
+            n2 = active_sorting_find_by(id_column, new_list[index.next]).active_sorting_value
           end
-          find_by("#{id_column}": id).active_sorting_center_item(n1, n2)
+          active_sorting_find_by(id_column, id).active_sorting_center_item(n1, n2)
         end
       end
 
@@ -144,6 +144,12 @@ module ActiveSorting
 
       def active_sorting_scope
         active_sorting_options[:scope]
+      end
+
+      def active_sorting_find_by(id_column, value)
+        conditions = {}
+        conditions[id_column] = value
+        find_by(conditions)
       end
     end
 

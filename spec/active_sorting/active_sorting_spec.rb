@@ -35,7 +35,7 @@ describe ActiveSorting do
       it 'restarts steps based on scope' do
         expect(Page.where(category: local).to_a.second.active_sorting_value).to eq 2 * Page.active_sorting_step
         expect(Page.where(category: sports).first.active_sorting_value).to eq Page.active_sorting_step
-        expect(Page.where(category: sports).last.active_sorting_value).to eq (5 * Page.active_sorting_step)
+        expect(Page.where(category: sports).last.active_sorting_value).to eq 5 * Page.active_sorting_step
       end
     end
 
@@ -51,7 +51,7 @@ describe ActiveSorting do
       it 'orders items by sortable field' do
         expect(Page.first.active_sorting_value).to eq Page.active_sorting_step
         expect(Page.all.to_a.second.active_sorting_value).to eq 2 * Page.active_sorting_step
-        expect(Page.last.active_sorting_value).to eq (10 * Page.active_sorting_step)
+        expect(Page.last.active_sorting_value).to eq 10 * Page.active_sorting_step
       end
     end
 
