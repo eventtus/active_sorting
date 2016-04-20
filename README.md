@@ -52,9 +52,11 @@ To sort by a model field `position`:
 You can customize the sorting behavior by
 passing an options hash. The following keys are supported:
 
-  `order` sorting direction, defaults to :asc
-  `step` stepping value, defaults to 500
-  `scope` scopes, defaults to []
+  `:order` sorting direction, can be one of `:asc` or `:desc`, defaults to __:asc__
+
+  `:step` stepping value, only `integers` allowed, defaults to __500__
+
+  `:scope` scopes, defines the `ActiveRecord` `scope` applied before calculating the `position` field value. Defaults to __[]__
 
 ## Development
 
