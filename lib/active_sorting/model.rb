@@ -37,7 +37,7 @@ module ActiveSorting
         old_list = unscoped.active_sorting_default_scope.where(conditions).pluck(id_column)
         raise ArgumentError, "Sortable list should be persisted to database" unless old_list.count
         changes = active_sorting_changes_required(old_list, new_list)
-        active_sorting_make_changes(new_list, changes, id_column)
+        active_sorting_make_changes(old_list, new_list, changes, id_column)
       end
 
       # Default sorting options
@@ -107,7 +107,7 @@ module ActiveSorting
       end
 
       # Commit changes to database
-      def active_sorting_make_changes(new_list, changes, id_column)
+      def active_sorting_make_changes(old_list, new_list, changes, id_column)
         new_list.each_with_index do |id, index|
           next unless changes.include?(id)
           if index == new_list.count.pred
@@ -119,8 +119,8 @@ module ActiveSorting
           elsif index == 0
             # We're moving an item to first position
             # Calculate the gap between following 2 items
-            n1 = active_sorting_find_by(id_column, new_list[index.next]).active_sorting_value
-            n2 = active_sorting_find_by(id_column, new_list[index.next]).active_sorting_value
+            n1 = 0
+            n2 = active_sorting_find_by(id_column, old_list[index]).active_sorting_value
           else
             # We're moving a non-terminal item
             n1 = active_sorting_find_by(id_column, new_list[index.pred]).active_sorting_value
