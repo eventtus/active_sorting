@@ -87,6 +87,24 @@ describe ActiveSorting do
     it { expect(Item.all.pluck(:id)).to eq new_list }
   end
 
+  context 'move to first position' do
+    let(:new_list) { [3, 1, 2, 4, 5, 6, 7] }
+    before do
+      items # just create the items
+      item.class.sort_list(new_list)
+    end
+    it { expect(Item.all.pluck(:id)).to eq new_list }
+  end
+
+  context 'move to last position' do
+    let(:new_list) { [1, 2, 3, 4, 6, 7, 5] }
+    before do
+      items # just create the items
+      item.class.sort_list(new_list)
+    end
+    it { expect(Item.all.pluck(:id)).to eq new_list }
+  end
+
   context '.active_sorting_changes_required' do
     let(:calculated) { item.class.active_sorting_changes_required(items.map(&:id), new_order) }
     before :each do
