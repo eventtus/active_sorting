@@ -3,17 +3,17 @@
 ## Status
 
 [![Gem Version](https://img.shields.io/gem/v/activesorting.svg)](http://rubygems.org/gems/activesorting)
-[![Build Status](https://travis-ci.org/owahab/active_sorting.svg?branch=master)](https://travis-ci.org/owahab/active_sorting)
-[![Coverage Status](https://coveralls.io/repos/github/owahab/active_sorting/badge.svg?branch=master)](https://coveralls.io/github/owahab/active_sorting?branch=master)
-[![Code Climate](https://codeclimate.com/github/owahab/active_sorting/badges/gpa.svg)](https://codeclimate.com/github/owahab/active_sorting)
-[![Inline docs](http://inch-ci.org/github/owahab/active_sorting.svg?branch=master)](http://inch-ci.org/github/owahab/active_sorting)
-[![security](https://hakiri.io/github/owahab/active_sorting/master.svg)](https://hakiri.io/github/owahab/active_sorting/master)
+[![Build Status](https://travis-ci.org/eventtus/active_sorting.svg?branch=master)](https://travis-ci.org/eventtus/active_sorting)
+[![Coverage Status](https://coveralls.io/repos/github/eventtus/active_sorting/badge.svg?branch=master)](https://coveralls.io/github/eventtus/active_sorting?branch=master)
+[![Code Climate](https://codeclimate.com/github/eventtus/active_sorting/badges/gpa.svg)](https://codeclimate.com/github/eventtus/active_sorting)
+[![Inline docs](http://inch-ci.org/github/eventtus/active_sorting.svg?branch=master)](http://inch-ci.org/github/eventtus/active_sorting)
+[![security](https://hakiri.io/github/eventtus/active_sorting/master.svg)](https://hakiri.io/github/owahab/active_sorting/master)
 [![Downloads](https://img.shields.io/gem/dtv/activesorting.svg)](http://rubygems.org/gems/activesorting)
-[![GitHub issues](https://img.shields.io/github/issues/owahab/active_sorting.svg?maxAge=2592000)](https://github.com/owahab/active_sorting/issues)
+[![GitHub issues](https://img.shields.io/github/issues/eventtus/active_sorting.svg?maxAge=2592000)](https://github.com/eventtus/active_sorting/issues)
 
 Allows sorting Rails models using a custom field.
 
-[Code Documentation](http://www.rubydoc.info/github/owahab/active_sorting)
+[Code Documentation](http://www.rubydoc.info/github/eventtus/active_sorting)
 
 ## Requirements
 
@@ -70,6 +70,6 @@ Please see CONTRIBUTING.md for details.
 
 ## Credits
 
-[![Eventtus](http://eventtus.com/css/images/logo.png)](http://eventtus.com)
+[![Eventtus](http://assets.eventtus.com/logos/eventtus/standard.png)](http://eventtus.com)
 
 Project is sponsored by [Eventtus](http://eventtus.com).
