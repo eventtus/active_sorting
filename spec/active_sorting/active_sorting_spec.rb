@@ -85,6 +85,10 @@ describe ActiveSorting do
       item.class.sort_list(new_list)
     end
     it { expect(Item.all.pluck(:id)).to eq new_list }
+
+    it 'should raise exception if new list items is not persisted' do
+      expect { item.class.sort_list([8]) }.to raise_error(ActiveSorting::Exceptions::RecordsNotFound)
+    end
   end
 
   context 'move to first position' do
@@ -173,6 +177,13 @@ describe ActiveSorting do
       context 'move 3 items including terminal items' do
         let(:new_order) { [7, 1, 3, 2, 5, 4, 6] }
         it { expect(calculated.count).to eq changes }
+      end
+    end
+
+    context 'invalid' do
+      context 'raise exception if new list size not equal the old list size' do
+        let(:new_order) { [7, 1, 3] }
+        it { expect { calculated }.to raise_error(ActiveSorting::Exceptions::InvalidListSize) }
       end
     end
   end

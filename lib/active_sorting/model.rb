@@ -31,11 +31,10 @@ module ActiveSorting
       # +id_column+ the field used for fetching records from the databse,
       #             defaults to :id
       def sort_list(new_list, id_column = :id)
-        raise ArgumentError, "Sortable list should not be empty" unless new_list.count
-        conditions = {}
-        conditions[id_column] = new_list
+        raise ArgumentError, "Sortable list should not be empty" if new_list.empty?
+        conditions = { id_column => new_list }
         old_list = unscoped.active_sorting_default_scope.where(conditions).pluck(id_column)
-        raise ArgumentError, "Sortable list should be persisted to database" unless old_list.count
+        raise Exceptions::RecordsNotFound, "Sortable list should be persisted to database with #{name} Model" if old_list.empty?
         changes = active_sorting_changes_required(old_list, new_list)
         active_sorting_make_changes(old_list, new_list, changes, id_column)
       end
@@ -75,10 +74,8 @@ module ActiveSorting
       # by comparing two proposals from
       # +active_sorting_calculate_changes+
       def active_sorting_changes_required(old_list, new_list)
+        raise Exceptions::InvalidListSize, "Sortable new and old lists should be of the same length" if old_list.count != new_list.count
         changes = []
-        if old_list.count != new_list.count
-          raise ArgumentError, "Sortable new and old lists should be of the same length"
-        end
         proposal1 = active_sorting_calculate_changes(old_list.dup, new_list.dup)
         if proposal1.count >= (new_list.count / 4)
           proposal2 = active_sorting_calculate_changes(old_list.dup.reverse, new_list.dup.reverse)
