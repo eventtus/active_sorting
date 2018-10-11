@@ -39,6 +39,26 @@ module ActiveSorting
         active_sorting_make_changes(old_list, new_list, changes, id_column)
       end
 
+      def sort_list_slow(new_list, id_column = :id)
+        raise ArgumentError, "Sortable list should not be empty" if new_list.empty?
+        conditions = { id_column => new_list }
+        old_list = unscoped.active_sorting_default_scope.where(conditions)
+        old_list_ids = old_list.pluck(id_column)
+
+        raise Exceptions::RecordsNotFound, "Sortable list should be persisted to database with #{name} Model" if old_list_ids.empty?
+        raise Exceptions::InvalidListSize, "Sortable new and old lists should be of the same length" if old_list.count != old_list_ids.count
+
+        weight_lists = old_list.map{|speaker| speaker.weight}
+
+        new_list.each_with_index do |id, index|
+          current_record = active_sorting_find_by(id_column, id)
+          if current_record.active_sorting_value != weight_lists[index] 
+            current_record.active_sorting_value = weight_lists[index] 
+            current_record.save!
+          end
+        end
+      end
+
       # Default sorting options
       def active_sorting_default_options
         {
