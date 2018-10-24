@@ -75,8 +75,8 @@ module ActiveSorting
         # unless field_type == :integer
         #   raise ArgumentError, "Sortable field should be of type Integer, #{field_type} where given"
         # end
-        unless active_sorting_step.is_a?(Fixnum)
-          raise ArgumentError, "Sortable step should be of type Fixnum, #{active_sorting_step.class.name} where given"
+        unless active_sorting_step.is_a?(Integer)
+          raise ArgumentError, "Sortable step should be of type Integer, #{active_sorting_step.class.name} where given"
         end
         unless active_sorting_scope.respond_to?(:each)
           raise ArgumentError, "Sortable step should be of type Enumerable, #{active_sorting_scope.class.name} where given"
